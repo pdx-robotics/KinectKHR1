@@ -78,5 +78,6 @@
         <TextBlock x:Name="label1_Copy" HorizontalAlignment="Left" TextWrapping="Wrap" Text="Left ShoulderX" VerticalAlignment="Top" Margin="0,62,0,0" Grid.Row="1" FontSize="20" Height="24" Width="161" Grid.ColumnSpan="2"/>
         <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Left ShoulderZ" VerticalAlignment="Top" Margin="0,168,0,0" Grid.Row="1" FontSize="20" Width="140" Grid.ColumnSpan="2"/>
         <TextBlock x:Name="label2_Copy" HorizontalAlignment="Left" TextWrapping="Wrap" Text="Left Elbow" VerticalAlignment="Top" Margin="0,268,0,0" Grid.Row="1" FontSize="20" Width="96"/>
+        <ComboBox x:Name="portOptions" Grid.ColumnSpan="2" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120" Margin="0,396.6,0,0" Grid.Row="1" SelectionChanged="portOptions_SelectionChanged"/>
     </Grid>
 </Window>

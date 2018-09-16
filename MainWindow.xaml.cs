@@ -11,6 +11,10 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
     /// </summary>
     public partial class MainWindow : Window
     {
+        /// <summary>
+        ///  instance of the communication responsible for communicating with the arduino over serial.
+        /// </summary>
+        CommManager comm = new CommManager();
 
         /// <summary>
         /// Width of output drawing
@@ -80,42 +84,54 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         /// Retrieving all needed angles for KHR_1
         private void getAngles(Skeleton skeleton)
         {
+            byte[] khr1Torso = new byte[7];
+            khr1Torso[0] = 255;
             ServoPosition angle = new ServoPosition();
+            
             /// Right Arm
-            double RightShoulderXangle = angle.XRotation(skeleton.Joints[JointType.Spine],
+            
+            double RightShoulderZangle = angle.Angle3D(skeleton.Joints[JointType.Spine],
                                                          skeleton.Joints[JointType.ShoulderRight],
                                                          skeleton.Joints[JointType.ElbowRight]);
-
-            double shoulderZangle = angle.Angle3D(skeleton.Joints[JointType.ShoulderLeft],
+            khr1Torso[1] = (byte) RightShoulderZangle;
+            
+            /// rotating arm towards or away from sensor
+            double RightShoulderXangle = angle.Angle3D(skeleton.Joints[JointType.HipCenter],
                                                   skeleton.Joints[JointType.ShoulderRight],  
                                                   skeleton.Joints[JointType.ElbowRight]);
+            khr1Torso[3] = (byte)RightShoulderXangle;
 
             double elbowAngle = angle.Angle3D(skeleton.Joints[JointType.ShoulderRight],
                                               skeleton.Joints[JointType.ElbowRight], 
                                               skeleton.Joints[JointType.WristRight]);
+            khr1Torso[4] = (byte)elbowAngle;
 
             /// Left Arm
-            double LeftShoulderXangle = angle.XRotation(skeleton.Joints[JointType.Spine],
+            double LeftShoulderZangle = angle.Angle3D(skeleton.Joints[JointType.Spine],
                                                          skeleton.Joints[JointType.ShoulderLeft],
                                                          skeleton.Joints[JointType.ElbowLeft]);
+            khr1Torso[2] = (byte)LeftShoulderZangle;
 
-            double LeftshoulderZangle = angle.Angle3D(skeleton.Joints[JointType.ShoulderRight],
+            double LeftshoulderXangle = angle.Angle3D(skeleton.Joints[JointType.ShoulderRight],
                                                   skeleton.Joints[JointType.ShoulderLeft],
                                                   skeleton.Joints[JointType.ElbowLeft]);
+            khr1Torso[5] = (byte)LeftshoulderXangle;
 
             double LeftelbowAngle = angle.Angle3D(skeleton.Joints[JointType.ShoulderLeft],
                                               skeleton.Joints[JointType.ElbowLeft],
                                               skeleton.Joints[JointType.WristLeft]);
+            khr1Torso[6] = (byte)LeftelbowAngle;
 
             /// set Right arm text boxes
-            shoulderText.Text = shoulderZangle.ToString();
+            shoulderText.Text = RightShoulderZangle.ToString();
             XElbowText.Text = elbowAngle.ToString();
             ShoulderX.Text = RightShoulderXangle.ToString();
 
             /// set Left arm text boxes
-            LeftShoulderZ.Text = LeftshoulderZangle.ToString();
+            LeftShoulderZ.Text = LeftShoulderZangle.ToString();
             LeftElbow.Text = LeftelbowAngle.ToString();
-            LeftShoulderX.Text = LeftShoulderXangle.ToString();
+            LeftShoulderX.Text = LeftshoulderXangle.ToString();
+            comm.write(khr1Torso);
         }
 
         /// <summary>
@@ -124,6 +140,10 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         public MainWindow()
         {
             InitializeComponent();
+            for(int i = 0; i < comm.ports.Length; ++i)
+            {
+                portOptions.Items.Add(comm.ports[i]);
+            }
         }
 
         /// <summary>
@@ -410,5 +430,11 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
             }
         }
 
+        private void portOptions_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            // TODO: add code to change port.
+            string selection = portOptions.SelectedItem.ToString();
+            comm = new CommManager(selection);
+        }
     }
 }

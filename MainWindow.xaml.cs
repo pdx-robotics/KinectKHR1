@@ -99,7 +99,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
             double RightShoulderXangle = angle.XRotation(skeleton.Joints[JointType.HipCenter],
                                                   skeleton.Joints[JointType.ShoulderRight],  
                                                   skeleton.Joints[JointType.ElbowRight]);
-            khr1Torso[3] = (byte)((RightShoulderXangle+180)/2);
+            khr1Torso[3] = (byte)(180 - RightShoulderXangle);
 
             double elbowAngle = angle.Angle3D(skeleton.Joints[JointType.ShoulderRight],
                                               skeleton.Joints[JointType.ElbowRight], 
@@ -110,7 +110,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
             double LeftShoulderZangle = angle.Angle3D(skeleton.Joints[JointType.ShoulderRight],
                                                          skeleton.Joints[JointType.ShoulderLeft],
                                                          skeleton.Joints[JointType.ElbowLeft]);
-            khr1Torso[2] = (byte)LeftShoulderZangle;
+            khr1Torso[2] = (byte)(LeftShoulderZangle - 50);
 
             double LeftshoulderXangle = angle.XRotation(skeleton.Joints[JointType.HipCenter],
                                                   skeleton.Joints[JointType.ShoulderLeft],

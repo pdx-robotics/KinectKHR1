@@ -46,7 +46,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
             ComPort.WriteTimeout = 500;
         }
         public int write(byte [] array) {
-            if (ComPort != null)
+            if (ComPort != null && ComPort.IsOpen)
                 ComPort.Write(array, 0, 7);
             else
                 return 0;

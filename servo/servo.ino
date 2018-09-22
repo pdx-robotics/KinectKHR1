@@ -31,12 +31,12 @@ void loop() {
     // read the most recent byte (which will be from 0 to 255):
     for(int i = 0; i < 7; ++i)
       joints[i] = Serial.read();
-    //DWRITE(0, joints[5]-50);//left arm pitch
-    //DWRITE(1, joints[2]-40);//left arm roll
-    //DWRITE(2,joints[6]-90);//left elbow
+    DWRITE(0, joints[5]);//left arm pitch x rotation
+    DWRITE(1, joints[2]-40);//left arm roll z rotation
+    DWRITE(2, joints[6]-90);//left elbow
 
-    DWRITE(15, joints[3]);//right arm shoulder pitch
-    //DWRITE(14, 220-joints[1]);//right arm
-    //DWRITE(13, 270-joints[4]);//right elbow
+    DWRITE(15, 180 - joints[3]);//right arm shoulder pitch x rotation
+    DWRITE(14, 180 - joints[1]);//right arm z rotation
+    DWRITE(13, 270-joints[4]);//right elbow
   }
 }

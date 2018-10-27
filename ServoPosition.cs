@@ -7,6 +7,23 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
 {
     class ServoPosition
     {
+        public static Boolean inFrame;
+        public double fov;
+
+        public ServoPosition()
+        {
+            inFrame = false;
+            fov = 0;
+        }
+
+        public void setFov(Skeleton skel)
+        {
+            Joint joint = skel.Joints[JointType.ShoulderLeft];
+            Vector3D kinectBase = new Vector3D(joint.Position.X, joint.Position.Y, 0.0);
+            Vector3D person = new Vector3D(joint.Position.X, joint.Position.Y, joint.Position.Z);
+            fov = Vector3D.AngleBetween(person, kinectBase);
+        }
+
         public Double ZRotation(Joint A, Joint Origin, Joint C)
         {  
             Vector a = new Vector(A.Position.X - Origin.Position.X, A.Position.Y - Origin.Position.Y);

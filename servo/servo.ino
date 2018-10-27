@@ -1,4 +1,3 @@
-
 #include <Wire.h>
 #include <Adafruit_PWMServoDriver.h>
 
@@ -14,29 +13,31 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 #define SERVOMAX  600 // this is the 'maximum' pulse length count (out of 4096)
 
 void setup() {
-  Serial.begin(9600);
-  Serial.println("8 channel Servo test!");
+	Serial.begin(9600);
+	Serial.println("8 channel Servo test!");
 
-  pwm.begin();
-  
-  pwm.setPWMFreq(60);  // Analog servos run at ~60 Hz updates
+	pwm.begin();
 
-  delay(10);
+	pwm.setPWMFreq(60);  // Analog servos run at ~60 Hz updates
+
+	delay(10);
 }
 
 void loop() {
-  byte joints [7];
-  // check if data has been sent from the computer:
-  if (Serial.available() == 7) {
-    // read the most recent byte (which will be from 0 to 255):
-    for(int i = 0; i < 7; ++i)
-      joints[i] = Serial.read();
-    DWRITE(0, joints[5]);//left arm pitch x rotation
-    DWRITE(1, joints[2]-40);//left arm roll z rotation
-    DWRITE(2, joints[6]-90);//left elbow
+	byte joints[7];
+	// check if data has been sent from the computer:
+	if (Serial.available() == 7) {
+		// read the most recent byte (which will be from 0 to 255):
+		for (int i = 0; i < 7; ++i)
+			joints[i] = Serial.read();
+		if (joints[0] = 255) {
+			DWRITE(0, joints[5]);//left arm pitch x rotation
+			DWRITE(1, joints[2] - 40);//left arm roll z rotation
+			DWRITE(2, joints[6] - 90);//left elbow
 
-    DWRITE(15, 180 - joints[3]);//right arm shoulder pitch x rotation
-    DWRITE(14, 180 - joints[1]);//right arm z rotation
-    DWRITE(13, 270-joints[4]);//right elbow
-  }
+			DWRITE(15, 180 - joints[3]);//right arm shoulder pitch x rotation
+			DWRITE(14, 180 - joints[1]);//right arm z rotation
+			DWRITE(13, 270 - joints[4]);//right elbow
+		}
+	}
 }

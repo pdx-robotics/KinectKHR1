@@ -15,6 +15,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         ///  instance of the communication responsible for communicating with the arduino over serial.
         /// </summary>
         CommManager comm = new CommManager();
+        ServoPosition angle = new ServoPosition();
 
         /// <summary>
         /// Width of output drawing
@@ -86,10 +87,13 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         {
             byte[] khr1Torso = new byte[7];
             khr1Torso[0] = 255;
-            ServoPosition angle = new ServoPosition();
-            
-            /// Right Arm
-            
+            angle.setFov(skeleton);
+            if(ServoPosition.inFrame == false || angle.fov > 100 || angle.fov < 80)
+            { 
+                return;
+            }
+
+            /// Right Arm 
             double RightShoulderZangle = angle.Angle3D(skeleton.Joints[JointType.ShoulderLeft],
                                                          skeleton.Joints[JointType.ShoulderRight],
                                                          skeleton.Joints[JointType.ElbowRight]);
@@ -129,7 +133,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
 
             /// set Left arm text boxes
             LeftShoulderZ.Text = LeftShoulderZangle.ToString();
-            LeftElbow.Text = LeftelbowAngle.ToString();
+            LeftElbow.Text = angle.fov.ToString();//LeftelbowAngle.ToString();
             LeftShoulderX.Text = LeftshoulderXangle.ToString();
             comm.write(khr1Torso);
         }
@@ -140,6 +144,8 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         public MainWindow()
         {
             InitializeComponent();
+
+            /// Adding available serial ports upon startup
             for(int i = 0; i < comm.ports.Length; ++i)
             {
                 portOptions.Items.Add(comm.ports[i]);
@@ -153,6 +159,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         /// <param name="drawingContext">drawing context to draw to</param>
         private static void RenderClippedEdges(Skeleton skeleton, DrawingContext drawingContext)
         {
+            ServoPosition.inFrame = true;
             if (skeleton.ClippedEdges.HasFlag(FrameEdges.Bottom))
             {
                 drawingContext.DrawRectangle(
@@ -167,6 +174,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                     Brushes.Red,
                     null,
                     new Rect(0, 0, RenderWidth, ClipBoundsThickness));
+                ServoPosition.inFrame = false;
             }
 
             if (skeleton.ClippedEdges.HasFlag(FrameEdges.Left))
@@ -175,6 +183,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                     Brushes.Red,
                     null,
                     new Rect(0, 0, ClipBoundsThickness, RenderHeight));
+                ServoPosition.inFrame = false;
             }
 
             if (skeleton.ClippedEdges.HasFlag(FrameEdges.Right))
@@ -183,6 +192,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                     Brushes.Red,
                     null,
                     new Rect(RenderWidth - ClipBoundsThickness, 0, ClipBoundsThickness, RenderHeight));
+                ServoPosition.inFrame = false;
             }
         }
 
@@ -281,11 +291,10 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                     foreach (Skeleton skel in skeletons)
                     {
                         RenderClippedEdges(skel, dc);
-
                         if (skel.TrackingState == SkeletonTrackingState.Tracked)
                         {
-                            this.DrawBonesAndJoints(skel, dc);
                             getAngles(skel);
+                            this.DrawBonesAndJoints(skel, dc);
                         }
                         else if (skel.TrackingState == SkeletonTrackingState.PositionOnly)
                         {
